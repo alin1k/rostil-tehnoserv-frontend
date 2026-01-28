@@ -36,22 +36,7 @@ import { Label } from "@/components/ui/label"
 
 function Furnizori() {
 
-    const [furnizorObj, furnizorInputs] = useContext(FurnizoriContext);
-
-    const {
-        furnizor,
-        handleAddFurnizor,
-        removeFurnizor
-    } = furnizorObj
-
-    const {
-        nume, setNume,
-        email, setEmail,
-        adresa, setAdresa,
-        numeError, setNumeError,
-        adresaError, setAdresaError,
-        emailError, setEmailError
-    } = furnizorInputs;
+    const {furnizor, handleAddFurnizor, removeFurnizor, nume, setNume, email, setEmail, adresa, setAdresa, numeError, setNumeError, adresaError, setAdresaError, emailError, setEmailError} = useContext(FurnizoriContext);
 
     return (
         <>
@@ -149,7 +134,7 @@ function Furnizori() {
                                                     <Trash />
                                                     <span
                                                         className="hover:cursor-pointer"
-                                                        onClick={() => removeFurnizor(index)}
+                                                        onClick={() => removeFurnizor(furnizor.id)}
                                                     >
                                                         Șterge
                                                     </span>

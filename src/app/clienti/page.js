@@ -35,20 +35,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 function Clienti() {
 
-  const [clientObj, clientInputs] = useContext(ClientiContext);
-
-  const { client, handleAdaugare, removeClient } = clientObj;
-  const {
-    nume, setNume,
-    telefon, setTelefon,
-    email, setEmail,
-    handleClient,
-    handleTelefon,
-    handleEmail,
-    numeError, setNumeError,
-    telefonError, setTelefonError,
-    emailError, setEmailError,
-  } = clientInputs;
+  const {client, handleAdaugare, removeClient, nume, setNume, telefon, setTelefon, email, setEmail, handleClient, handleTelefon, handleEmail, numeError, setNumeError, telefonError, setTelefonError, emailError, setEmailError} = useContext(ClientiContext);
 
   return (
     <>
@@ -147,7 +134,7 @@ function Clienti() {
                           <Trash />
                           <span
                             className="hover:cursor-pointer"
-                            onClick={() => removeClient(index)}
+                            onClick={() => removeClient(client.id)}
                           >
                             Șterge
                           </span>

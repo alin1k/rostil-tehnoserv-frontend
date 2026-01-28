@@ -1,20 +1,22 @@
 import { useState, useEffect } from "react";
+import { fetchFurnizori, addFurnizor, deleteFurnizor } from "../api";
 
 export const useFurnizor = () => {
   const [furnizor, setFurnizor] = useState([]);
 
   useEffect(() => {
-    const storedFurnizori = localStorage.getItem("furnizori");
-    if (storedFurnizori) {
-      setFurnizor(JSON.parse(storedFurnizori));
-    }
+    const getFurnizori = async () => {
+      try {
+        const data = await fetchFurnizori();
+        setFurnizor(data);
+      } catch (error) {
+        console.error("Error fetching furnizori:", error);
+      }
+    };
+    getFurnizori();
   }, []);
 
-  useEffect(() => {
-    localStorage.setItem("furnizori", JSON.stringify(furnizor));
-  }, [furnizor]);
-
-  function handleAddFurnizor(
+  async function handleAddFurnizor(
     nume,
     adresa,
     email,
@@ -53,17 +55,25 @@ export const useFurnizor = () => {
         fAdresa: adresa,
         fEmail: email,
       };
-      setFurnizor((f) => [...f, newFurnizor]);
-
-  
-      setNume("");
-      setAdresa("");
-      setEmail("");
+      try {
+        const addedFurnizor = await addFurnizor(newFurnizor);
+        setFurnizor((f) => [...f, addedFurnizor]);
+        setNume("");
+        setAdresa("");
+        setEmail("");
+      } catch (error) {
+        console.error("Error adding furnizor:", error);
+      }
     }
   }
 
-  function removeFurnizor(index){
-    setFurnizor(prev => prev.filter((f, i)=> i!== index));
+  async function removeFurnizor(id){
+    try {
+      await deleteFurnizor(id);
+      setFurnizor(prev => prev.filter((f) => f.id !== id));
+    } catch (error) {
+      console.error("Error deleting furnizor:", error);
+    }
   }
 
   return {

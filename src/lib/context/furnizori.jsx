@@ -7,12 +7,11 @@ export const FurnizoriContext = createContext();
 
 export function FurnizoriProvider({children}) {
 
-  const furnizori = useFurnizor();
-  const furnizoriInputs = useFurnizorInputs();
+  const [furnizori, furnizoriInputs] = [useFurnizor(), useFurnizorInputs()];
 
   return (
-    <FurnizoriContext.Provider value={[furnizori, furnizoriInputs]}>
+    <FurnizoriContext.Provider value={{...furnizori, ...furnizoriInputs}}>
       {children}
     </FurnizoriContext.Provider>
-  )
+  );
 }

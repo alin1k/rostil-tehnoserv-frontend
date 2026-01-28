@@ -1,20 +1,22 @@
 import { useState, useEffect } from "react";
+import { fetchClients, addClient, deleteClient } from "../api";
 
 export const useClient = ()=>{
-  const [client, setClient] = useState([])
+  const [client, setClient] = useState([]);
 
   useEffect(() => {
-    const storedClienti = localStorage.getItem("clienti");
-    if (storedClienti) {
-      setClient(JSON.parse(storedClienti));
-    }
+    const getClients = async () => {
+      try {
+        const data = await fetchClients();
+        setClient(data);
+      } catch (error) {
+        console.error("Error fetching clients:", error);
+      }
+    };
+    getClients();
   }, []);
 
-  useEffect(() => {
-    localStorage.setItem("clienti", JSON.stringify(client));
-  }, [client]);
-
-  function handleAdaugare(nume, telefon, email, setNume, setTelefon, setEmail,setNumeError,setEmailError,setTelefonError) {
+  async function handleAdaugare(nume, telefon, email, setNume, setTelefon, setEmail,setNumeError,setEmailError,setTelefonError) {
     
     const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
@@ -49,18 +51,27 @@ export const useClient = ()=>{
         cTelefon: telefon
       };
 
-      setClient(c => [...c, newClient])
-
-    setNume("");
-    setTelefon("");
-    setEmail("");
+      try {
+        const addedClient = await addClient(newClient);
+        setClient(c => [...c, addedClient]);
+        setNume("");
+        setTelefon("");
+        setEmail("");
+      } catch (error) {
+        console.error("Error adding client:", error);
+      }
     }
 
   
   };
 
-  function removeClient(index) {
-    setClient(client.filter((componenta, i) => index !== i))
+  async function removeClient(id) {
+    try {
+      await deleteClient(id);
+      setClient(client.filter((c) => c.id !== id));
+    } catch (error) {
+      console.error("Error deleting client:", error);
+    }
   }
 
   return {

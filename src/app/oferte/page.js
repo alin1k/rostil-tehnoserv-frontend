@@ -42,28 +42,28 @@ import { Input } from '@/components/ui/input';
 import { Label } from "@/components/ui/label"
 import Link from 'next/link';
 import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { PDFDownloadLink } from '@react-pdf/renderer';
+import dynamic from 'next/dynamic';
+
+const PDFDownloadLink = dynamic(
+  () => import('@react-pdf/renderer').then((mod) => mod.PDFDownloadLink),
+  {
+    ssr: false,
+    loading: () => <p>Loading document...</p>,
+  }
+);
 import OfferReport from '@/components/OfferReport';
 
 export default function Oferte() {
  
-  const [clientiObj] = useContext(ClientiContext);
-  const {client: clienti} = clientiObj;
+  const {client: clienti} = useContext(ClientiContext);
 
-  const [oferteObj, oferteInputs] = useContext(OferteContext);
- 
-  const {
-    oferta: oferte,
+  const {oferta: oferte,
     handleAdaugareOferta,
     removeOferta,
-  } = oferteObj
-
-  const {
     numeOferta, setNumeOferta,
     numeClient,
     handleNumeClient,
-    handleNumeOferta,
-  } = oferteInputs;
+    handleNumeOferta,} = useContext(OferteContext);
 
   const [open, setOpen] = useState(false)
   const [value, setValue] = useState("")
@@ -168,7 +168,7 @@ export default function Oferte() {
               <p>Pret total: <span className='font-bold text-lg'>{oferta.total} RON</span></p>
             </CardContent>
             <CardFooter className="grid grid-cols-2 gap-2">
-              <Link href={`/oferte/${oferta.id}`}>
+              <Link href={`/oferte/${oferta.uuid}`}>
                 <Button variant="secondary" className="w-full">Edit</Button>
               </Link>
               <Dialog>
@@ -215,7 +215,7 @@ export default function Oferte() {
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                   <AlertDialogCancel>Anulare</AlertDialogCancel>
-                  <AlertDialogAction onClick={()=> removeOferta(index)}>Sterge Oferta</AlertDialogAction>
+                  <AlertDialogAction onClick={()=> removeOferta(oferta.uuid)}>Sterge Oferta</AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>

@@ -15,9 +15,9 @@ import { useContext } from "react";
 
 export default function Home() {
 
-  const [{oferta}] = useContext(OferteContext);
-  const [{client}] = useContext(ClientiContext);
-  const [{furnizor}] = useContext(FurnizoriContext);
+  const {oferta} = useContext(OferteContext);
+  const {client} = useContext(ClientiContext);
+  const {furnizor} = useContext(FurnizoriContext);
 
   return (
     <div>

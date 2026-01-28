@@ -2,7 +2,7 @@
 
 import { useContext, useEffect, useState } from 'react'
 import { OferteContext } from '@/lib/context/oferte'
-import products from '@/data/products.json'
+import { fetchProducts } from '@/lib/api'
 import {
   Table,
   TableBody,
@@ -44,18 +44,30 @@ export default function EditOferta({id}) {
 
   const router = useRouter();
 
-  const [{oferta: oferte, editOferta}] = useContext(OferteContext);
-  const [oferta] = oferte.filter(oferta => oferta.id === id)
-  const [produse, setProduse] = useState(oferta?.produse);
+  const {oferta: oferte, editOferta} = useContext(OferteContext);
+  const [oferta] = oferte.filter(oferta => oferta.uuid === id)
+  const [produse, setProduse] = useState(oferta?.produse || []);
   const [total, setTotal] = useState(0);
-  const [nume, setNume] = useState(oferta?.nume)
+  const [nume, setNume] = useState(oferta?.nume);
+  const [allProducts, setAllProducts] = useState([]);
 
   const [checkedStates, setCheckedStates] = useState({});
 
   useEffect(()=>{
-    console.log(produse);
+    const getProducts = async () => {
+      try {
+        const data = await fetchProducts();
+        setAllProducts(data);
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      }
+    };
+    getProducts();
+  }, []);
+
+  useEffect(()=>{
     setTotal(0);
-    produse.forEach(produs => {
+    produse?.forEach(produs => {
       setTotal(prev => prev + produs.buc * produs.price)
     });
   }, [produse]);
@@ -68,13 +80,11 @@ export default function EditOferta({id}) {
   };
 
   const handleAddButtonClick = () => {
-    const checkedIds = Object.keys(checkedStates).filter(code => checkedStates[code]);
+    const checkedCodes = Object.keys(checkedStates).filter(code => checkedStates[code]);
     setCheckedStates({});
 
-    console.log('Checked IDs:', checkedIds);
-
     const updatedProduse = produse.map(produs => {
-      if (checkedIds.includes(produs.code)) {
+      if (checkedCodes.includes(produs.code)) {
         return {
           ...produs,
           buc: parseInt(produs.buc) + 1,
@@ -83,8 +93,8 @@ export default function EditOferta({id}) {
       return produs;
     });
 
-    const newProducts = products
-      .filter(product => checkedIds.includes(product.code) && !produse.some(produs => produs.code === product.code))
+    const newProducts = allProducts
+      .filter(product => checkedCodes.includes(product.code) && !produse.some(produs => produs.code === product.code))
       .map(product => ({ ...product, buc: 1 }));
 
     if (newProducts.length > 0) {
@@ -160,7 +170,7 @@ export default function EditOferta({id}) {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {products.map((product)=>
+                  {allProducts.map((product)=>
                     <TableRow key={product.code}>
                       <TableCell><Image src={product.img_src} width={100} height={50} className='w-100' alt={`imagine ${product.name}`}/></TableCell>
                       <TableCell>{product.name}</TableCell>

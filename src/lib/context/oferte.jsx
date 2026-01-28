@@ -7,12 +7,11 @@ export const OferteContext = createContext();
 
 export function OferteProvider({children}) {
 
-  const oferte = useOferte();
-  const oferteInputs = useOferteInputs();
+  const [oferte, oferteInputs] = [useOferte(), useOferteInputs()];
 
   return (
-    <OferteContext.Provider value={[oferte, oferteInputs]}>
+    <OferteContext.Provider value={{...oferte, ...oferteInputs}}>
       {children}
     </OferteContext.Provider>
-  )
+  );
 }

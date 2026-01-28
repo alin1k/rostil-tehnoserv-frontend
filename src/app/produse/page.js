@@ -1,6 +1,8 @@
-import React from 'react'
+"use client"
 
-import products from '@/data/products.json'
+import React, { useEffect, useState } from 'react'
+
+import { fetchProducts } from '@/lib/api'
 import {
     Table,
     TableBody,
@@ -24,6 +26,20 @@ import {
 import Image from 'next/image'
 
 export default function Produse() {
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    const getProducts = async () => {
+      try {
+        const data = await fetchProducts();
+        setProducts(data);
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      }
+    };
+    getProducts();
+  }, []);
+
     return (
         <div>
             <h1 className='text-xl font-bold mb-5'>Gestionare produse</h1>
